@@ -13,4 +13,7 @@ using Curso.Entidades;
         }
 
         public DbSet<Curso.Entidades.Usuarios> Usuarios { get; set; } = default!;
-    }
+        public DbSet<ListaTareas> ListasTareas { get; set; }
+        public DbSet<Tareas> Tareas { get; set; }
+        public DbSet<Recordatorios> Recordatorios { get; set; }
+}

@@ -28,34 +28,50 @@ namespace Curso.API.Controllers
             return Ok(usuarios);
         }
 
-        //// GET: Usuarios/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    var usuarios = await _context.Usuarios
-        //        .FirstOrDefaultAsync(m => m.UsuarioID == id);
-        //    if (usuarios == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet("UserByID/{id}")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
 
-        //    return View(usuarios);
-        //}
+            var usuarios = await _context.Usuarios
+                .Include(l => l.ListasTarea)
+                .ThenInclude(t => t.Tareas)
+                .Select(item => new
+                {
+                    item.UsuarioID,
+                    item.Nombre,
+                    item.Email,
+                    item.FechaRegistro,
+                    ListaTareas = item.ListasTarea.Select(l => new
+                    {
+                        l.ListaID,
+                        l.Nombre,
+                        Tareas = l.Tareas.Select(t => new
+                        {
+                            t.TareaID,
+                            t.Descripcion,
+                            t.Estado
+                        })
+                    })
 
-        //// GET: Usuarios/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
+                })
+                .FirstOrDefaultAsync(m => m.UsuarioID == id);
+            if (usuarios == null)
+            {
+                return BadRequest();
+            }
 
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+            return Ok(usuarios);
+        }
+
+
+
+
+        [HttpPost("Crear")]
         public async Task<IActionResult> Create( Usuarios usuarios)
         {
             if (ModelState.IsValid)
@@ -67,93 +83,57 @@ namespace Curso.API.Controllers
             return BadRequest(new {Message = "error al crear el usuario"});
         }
 
-        //// GET: Usuarios/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    var usuarios = await _context.Usuarios.FindAsync(id);
-        //    if (usuarios == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(usuarios);
-        //}
+        [HttpPost("Edit/{id}")]
+        public async Task<IActionResult> Edit(int id,  Usuarios usuarios)
+        {
+            if (id != usuarios.UsuarioID)
+            {
+                return BadRequest();
+            }
 
-        //// POST: Usuarios/Edit/5
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        
-        //public async Task<IActionResult> Edit(int id, [Bind("UsuarioID,Nombre,Email,ConstraseñaHash,FechaRegistro")] Usuarios usuarios)
-        //{
-        //    if (id != usuarios.UsuarioID)
-        //    {
-        //        return NotFound();
-        //    }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(usuarios);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UsuariosExists(usuarios.UsuarioID))
+                    {
+                        return BadRequest();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return Ok(new {message="Se edito"});
+            }
+            return BadRequest();
+        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(usuarios);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!UsuariosExists(usuarios.UsuarioID))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(usuarios);
-        //}
-
-        //// GET: Usuarios/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var usuarios = await _context.Usuarios
-        //        .FirstOrDefaultAsync(m => m.UsuarioID == id);
-        //    if (usuarios == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(usuarios);
-        //}
 
         //// POST: Usuarios/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var usuarios = await _context.Usuarios.FindAsync(id);
-        //    if (usuarios != null)
-        //    {
-        //        _context.Usuarios.Remove(usuarios);
-        //    }
+        [HttpPost("Delete/{id}")]
 
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var usuarios = await _context.Usuarios.FindAsync(id);
+            if (usuarios != null)
+            {
+                _context.Usuarios.Remove(usuarios);
+            }
 
-        //private bool UsuariosExists(int id)
-        //{
-        //    return _context.Usuarios.Any(e => e.UsuarioID == id);
-        //}
+            await _context.SaveChangesAsync();
+            return Ok(new {message="se borro", usuario=usuarios});
+        }
+
+        private bool UsuariosExists(int id)
+        {
+            return _context.Usuarios.Any(e => e.UsuarioID == id);
+        }
     }
 }
