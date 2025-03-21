@@ -1,7 +1,12 @@
+using Curso.Servicos;
+using Curso.Servicos.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IAPIService,ApiService>();
 
 var app = builder.Build();
 

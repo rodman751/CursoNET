@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Curso.Data\Curso.Data.csproj" />
     <ProjectReference Include="..\Curso.Entidades\Curso.Entidades.csproj" />
   </ItemGroup>
 

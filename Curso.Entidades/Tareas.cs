@@ -14,7 +14,7 @@ namespace Curso.Entidades
         public int TareaID { get; set; }
         public int ListaID { get; set; }
         public string Descripcion { get; set; }
-        public DateTime FechaVencimineto { get; set; }
+        public DateTime FechaVencimiento { get; set; }  
         public string Estado { get; set; }
 
         //relaciones

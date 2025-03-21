@@ -14,9 +14,9 @@ namespace Curso.API.Controllers
     [ApiController]
     public class UsuariosController : Controller
     {
-        private readonly DbContext _context;
+        private readonly Data.DbContext _context;
 
-        public UsuariosController(DbContext context)
+        public UsuariosController(Data.DbContext context)
         {
             _context = context;
         }
@@ -84,7 +84,7 @@ namespace Curso.API.Controllers
         }
 
 
-        [HttpPost("Edit/{id}")]
+        [HttpPut("Edit/{id}")]
         public async Task<IActionResult> Edit(int id,  Usuarios usuarios)
         {
             if (id != usuarios.UsuarioID)
@@ -117,7 +117,7 @@ namespace Curso.API.Controllers
 
 
         //// POST: Usuarios/Delete/5
-        [HttpPost("Delete/{id}")]
+        [HttpDelete("Delete/{id}")]
 
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
