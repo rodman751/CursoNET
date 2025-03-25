@@ -59,6 +59,35 @@ namespace Curso.API.Controllers
             return Ok(listaTareas);
         }
 
+
+
+        [HttpGet("ByID{idUser}")]
+        public async Task<IActionResult> ListByUser(int idUser)
+        {
+            var listasTareas = await _context.ListasTareas
+            .Include(t => t.Tareas)
+            .Where(u => u.UsuarioID == idUser)
+            .Select(item => new
+            {
+                item.ListaID,
+                item.UsuarioID,
+                item.Nombre,
+                Tareas = item.Tareas.Select(t => new
+                {
+                    t.TareaID,
+                    t.Descripcion,
+                    t.Estado
+                }),
+                Usuario = new
+                {
+                    item.Usuario.UsuarioID,
+                    item.Usuario.Nombre
+                }
+            })
+            .ToListAsync();
+            return Ok(listasTareas);
+        }
+
         // PUT: api/ListaTareas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
