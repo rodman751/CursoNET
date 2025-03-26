@@ -1,11 +1,13 @@
 ﻿using Curso.ConsumeAPI;
 using Curso.Entidades;
 using Curso.Servicos.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Curso.Presentacion.Controllers
 {
+    [Authorize]
     public class UsuarioController : Controller
     {
         private readonly IAPIService _iAPIService;

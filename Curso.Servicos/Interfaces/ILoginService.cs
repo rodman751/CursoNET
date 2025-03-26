@@ -9,5 +9,6 @@ namespace Curso.Servicos.Interfaces
     public interface ILoginService
     {
         Task<bool> RegisterService(string Usuario, string Emial, string Contraseña, string ConfContra);
+        Task<bool> PostLogin(string Contraseña, string Email);
     }
 }

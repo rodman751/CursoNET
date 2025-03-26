@@ -32,5 +32,14 @@ namespace Curso.Servicos
             return true;
 
         }
+        public async Task<bool> PostLogin(string Contraseña, string Email)
+        {
+            var user = await _dbContext.Usuarios.FirstOrDefaultAsync(x => x.Email == Email);
+            if (user == null) return false;
+            return BCrypt.Net.BCrypt.Verify(Contraseña, user.ContraseñaHash);
+
+        }
+
+
     }
 }
